@@ -7,10 +7,10 @@ use App\Http\Controllers\api\AccessTokenController;
 
 /*
 |--------------------------------------------------------------------------
-| API Routes
+| Api Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register API routes for your application. These
+| Here is where you can register Api routes for your application. These
 | routes are loaded by the RouteServiceProvider and all of them will
 | be assigned to the "api" middleware group. Make something great!
 |
@@ -21,14 +21,16 @@ Route::get('/login', function () {
 
 
 Route::group(['middleware' => ['api','auth:api']], function ($router) {
-    Route::post('login' ,'App\Http\Controllers\API\AuthController@login')->withoutMiddleware('auth:api');
-    Route::post('register' ,'App\Http\Controllers\API\AuthController@register')->withoutMiddleware('auth:api');
-    Route::post('logout', 'App\Http\Controllers\API\AuthController@logout');
-    Route::get('allusers', 'App\Http\Controllers\API\AuthController@allusers');
-    Route::post('refresh', 'App\Http\Controllers\API\AuthController@refresh');
-    Route::get('userProfile', 'App\Http\Controllers\API\AuthController@userProfile');
-    Route::put('update_user', 'App\Http\Controllers\API\AuthController@update');
-    Route::post('delete', 'App\Http\Controllers\API\AuthController@destroy');
+//    Route::post('login', [App\Http\Controllers\Api\AuthController::class, 'login'])->name('login')->withoutMiddleware('auth:api');
+
+    Route::post('/login' ,'App\Http\Controllers\Api\AuthController@login')->withoutMiddleware('auth:api');
+    Route::post('register' ,'App\Http\Controllers\Api\AuthController@register')->withoutMiddleware('auth:api');
+    Route::post('logout', 'App\Http\Controllers\Api\AuthController@logout');
+    Route::get('allusers', 'App\Http\Controllers\Api\AuthController@allusers');
+    Route::post('refresh', 'App\Http\Controllers\Api\AuthController@refresh');
+    Route::get('userProfile', 'App\Http\Controllers\Api\AuthController@userProfile');
+    Route::put('update_user', 'App\Http\Controllers\Api\AuthController@update');
+    Route::post('delete', 'App\Http\Controllers\Api\AuthController@destroy');
 
 
     Route::group(['middleware' => ['api'], 'prefix' => 'team'], function ($router) {
