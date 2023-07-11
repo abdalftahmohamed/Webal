@@ -21,9 +21,8 @@ Route::get('/login', function () {
 
 
 Route::group(['middleware' => ['api','auth:api']], function ($router) {
-//    Route::post('login', [App\Http\Controllers\Api\AuthController::class, 'login'])->name('login')->withoutMiddleware('auth:api');
 
-    Route::post('/login' ,'App\Http\Controllers\Api\AuthController@login')->withoutMiddleware('auth:api');
+    Route::post('login' ,'App\Http\Controllers\Api\AuthController@login')->withoutMiddleware('auth:api');
     Route::post('register' ,'App\Http\Controllers\Api\AuthController@register')->withoutMiddleware('auth:api');
     Route::post('logout', 'App\Http\Controllers\Api\AuthController@logout');
     Route::get('allusers', 'App\Http\Controllers\Api\AuthController@allusers');
@@ -31,6 +30,7 @@ Route::group(['middleware' => ['api','auth:api']], function ($router) {
     Route::get('userProfile', 'App\Http\Controllers\Api\AuthController@userProfile');
     Route::put('update_user', 'App\Http\Controllers\Api\AuthController@update');
     Route::post('delete', 'App\Http\Controllers\Api\AuthController@destroy');
+    Route::post('updateProfile', [App\Http\Controllers\Api\AuthController::class, 'updateProfile']);
 
 
     Route::group(['middleware' => ['api'], 'prefix' => 'team'], function ($router) {

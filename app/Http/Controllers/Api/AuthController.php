@@ -4,6 +4,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -94,7 +95,48 @@ class AuthController extends Controller
         }
 
     }
+    protected function updateProfile(Request $request){
+        $id_user=auth()->user()->id;
 
+        $user = User::find($id_user);
+
+        $rules = [
+            "email" => "email|unique:users,email,".$id_user,
+            "password" => "string|confirmed|min:6",
+            "country_id" => "integer",
+            "city_id" => "integer",
+        ];
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        // Check if the old password matches
+        if ($request->has('password') && $request->has('old_password')) {
+            if (!Hash::check($request->input('old_password'), $user->password)) {
+                return response()->json([
+                    'status' => false,
+                    'en' => 'Old Password Is Incorrect',
+                    'ar' => 'كلمة المرور القديمة غير صحيحة',
+                ],502);
+            }
+            $user->password = bcrypt($request->input('password'));
+        }
+        // Update the user's information
+        $user->name = $request->input('name');
+        $user->email = $request->input('email');
+        $user->country_id = $request->input('country_id');
+        $user->city_id = $request->input('city_id');
+        $user->save();
+
+        return response()->json([
+            'status' => true,
+            'en' => 'Profile Updated Successfully',
+            'ar' => 'تم تحديث الملف الشخصي بنجاح',
+            'data' => $user,
+
+        ],201);
+    }
 
     public function logout() {
         auth()->logout();
