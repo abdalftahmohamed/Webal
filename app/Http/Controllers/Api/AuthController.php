@@ -53,10 +53,8 @@ class AuthController extends Controller
             $validator->validated(),
             ['password' => bcrypt($request->password)]
         ));
-        return response()->json([
-            'message' => 'User successfully registered',
-            'user' => $user
-        ], 201);
+        $token = auth('api')->login($user);
+        return $this->createNewToken($token);
     }
 
 
@@ -137,7 +135,13 @@ class AuthController extends Controller
 
         ],201);
     }
-
+    public function userProfilebyid() {
+       $user=User::find(auth()->user()->id);
+        return response()->json([
+        'message'=>'true',
+         'user'=> $user,
+        ]);
+    }
     public function logout() {
         auth()->logout();
         return response()->json(['message' => 'User successfully signed out']);
@@ -151,7 +155,7 @@ class AuthController extends Controller
 
 
 
-    public function userProfile() {
+    public function usersProfile() {
 //        dd('hghhh');
         return response()->json(auth()->user());
     }
@@ -174,9 +178,10 @@ class AuthController extends Controller
 
 
 
-    public function destroy(Request $request)
+    public function destroy()
     {
-        $user = User::find($request->id);
+        $user=User::find(auth()->user()->id);
+
         if ($user){
             if ($user->type == null){
 

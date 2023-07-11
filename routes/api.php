@@ -28,7 +28,8 @@ Route::group(['middleware' => ['api','auth:api']], function ($router) {
     Route::post('logout', 'App\Http\Controllers\Api\AuthController@logout');
     Route::get('allusers', 'App\Http\Controllers\Api\AuthController@allusers');
     Route::post('refresh', 'App\Http\Controllers\Api\AuthController@refresh');
-    Route::get('userProfile', 'App\Http\Controllers\Api\AuthController@userProfile');
+    Route::get('usersProfile', 'App\Http\Controllers\Api\AuthController@usersProfile');
+    Route::get('userProfileById', 'App\Http\Controllers\Api\AuthController@userProfilebyid');
     Route::put('update_user', 'App\Http\Controllers\Api\AuthController@update');
     Route::post('delete', 'App\Http\Controllers\Api\AuthController@destroy');
     Route::post('updateProfile', [AuthController::class, 'updateProfile']);
