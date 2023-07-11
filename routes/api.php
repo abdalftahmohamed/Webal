@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ForgotPasswordController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\AccessTokenController;
@@ -30,7 +31,9 @@ Route::group(['middleware' => ['api','auth:api']], function ($router) {
     Route::get('userProfile', 'App\Http\Controllers\Api\AuthController@userProfile');
     Route::put('update_user', 'App\Http\Controllers\Api\AuthController@update');
     Route::post('delete', 'App\Http\Controllers\Api\AuthController@destroy');
-    Route::post('updateProfile', [App\Http\Controllers\Api\AuthController::class, 'updateProfile']);
+    Route::post('updateProfile', [AuthController::class, 'updateProfile']);
+    Route::post('password/email', [ForgotPasswordController::class,'forgetPassword'])->withoutMiddleware('auth:api');
+    Route::post('password/reset', [ForgotPasswordController::class,'resetPassword'])->withoutMiddleware('auth:api');
 
 
     Route::group(['middleware' => ['api'], 'prefix' => 'team'], function ($router) {
@@ -176,8 +179,6 @@ Route::group(['middleware' => ['api','auth:api']], function ($router) {
         Route::post('delete/{id}', '\App\Http\Controllers\Api\LivelinkedinController@destroy');
     });
 
-    Route::post('password/email', [\App\Http\Controllers\Api\ForgotPasswordController::class,'forgetPassword'])->withoutMiddleware('auth:api');
-    Route::post('password/reset', [\App\Http\Controllers\Api\ForgotPasswordController::class,'resetPassword'])->withoutMiddleware('auth:api');
 
 // Route::post('register', 'RegistrationController@register');
 // Route::get('email/verify/{id}', 'VerificationController@verify')->name('verification.verify');

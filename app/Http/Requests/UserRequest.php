@@ -30,7 +30,7 @@ class UserRequest extends FormRequest
         return [
             'email'=> 'email|max:255|unique:users,email,'.$this->id,
             'name'=> 'required|string|min:5|max:30',
-            'password'=> 'required|string|min:6'
+//            'password'=> 'required|string|min:6'
         ];
     }
     protected function failedValidation(Validator $validator)

@@ -21,9 +21,6 @@ use Illuminate\Validation\Rules\Password as RulesPassword;
 class ForgotPasswordController extends Controller
 {
 
-
-
-
     public function forgetPassword(Request $request)
     {
         $verificationCode = mt_rand(100000, 999999);

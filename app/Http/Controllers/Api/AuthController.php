@@ -65,21 +65,21 @@ class AuthController extends Controller
 
         $user = User::findOrFail($request->id);
         if ($user){
-            if ($user->type == null){
+            if ($user->type == 'admin'){
 
                 $data['name']  =$request->name ? $request->name : $user->name;
                 $data['email'] = $request->email ? $request->email : $user->email;
-                $data['password'] = $request->password ? $request->password : $user->password;
+//                $data['password'] = $request->password ? $request->password : $user->password;
                 $data['country_id'] = $request->country_id ? $request->country_id : $user->country_id;
                 $data['city_id'] = $request->city_id ? $request->country_id : $user->city_id;
-                $data['type'] = $request->type ? $request->type : $user->type;
+//                $data['type'] = $request->type ? $request->type : $user->type;
 
 
                 $user->update($data);
                 return response()->json([
-//            'status'=>true,
-                    $user
-//            'message' => 'User Updated Successfully',
+                    'status'=>true,
+                    'data'=>$user,
+                    'message' => 'User Updated Successfully',
                 ]);
             }else{
                 return response()->json([
@@ -176,7 +176,7 @@ class AuthController extends Controller
 
     public function destroy(Request $request)
     {
-        $user = User::findOrFail($request->id);
+        $user = User::find($request->id);
         if ($user){
             if ($user->type == null){
 
