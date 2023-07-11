@@ -176,8 +176,8 @@ Route::group(['middleware' => ['api','auth:api']], function ($router) {
         Route::post('delete/{id}', '\App\Http\Controllers\Api\LivelinkedinController@destroy');
     });
 
-    Route::post('password/email', [\App\Http\Controllers\Api\ForgotPasswordController::class,'forgot'])->withoutMiddleware('auth:api');
-    Route::post('password/reset', [\App\Http\Controllers\Api\ForgotPasswordController::class,'reset'])->withoutMiddleware('auth:api');
+    Route::post('password/email', [\App\Http\Controllers\Api\ForgotPasswordController::class,'forgetPassword'])->withoutMiddleware('auth:api');
+    Route::post('password/reset', [\App\Http\Controllers\Api\ForgotPasswordController::class,'resetPassword'])->withoutMiddleware('auth:api');
 
 // Route::post('register', 'RegistrationController@register');
 // Route::get('email/verify/{id}', 'VerificationController@verify')->name('verification.verify');

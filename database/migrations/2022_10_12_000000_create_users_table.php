@@ -18,6 +18,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
             $table->string('type')->nullable();
+            $table->string('code')->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->bigInteger('country_id')->unsigned()->nullable();

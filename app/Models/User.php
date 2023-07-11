@@ -53,7 +53,6 @@ class User extends Authenticatable implements LaratrustUser,MustVerifyEmail,JWTS
     ];
     public function sendPasswordResetNotification($token)
     {
-
         $url = 'https://spa.test/reset-password?token=' . $token;
 
         $this->notify(new ResetPasswordNotification($url));

@@ -69,5 +69,5 @@ class UserController extends Controller
                 'message' => 'Request Information deleted Successfully',
             ]);
             }
-        }
+}
 
