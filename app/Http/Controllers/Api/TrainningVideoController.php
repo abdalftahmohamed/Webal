@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\api\TrainningVideoRequest;
+use App\Http\Resources\TrainingVideoResource;
 use App\Models\TrainningVideo;
 use App\Traits\GeneralTrait;
 use App\Traits\ImageTrait;
@@ -19,7 +20,7 @@ class TrainningVideoController extends Controller
         try {
             $trainningVideos = TrainningVideo::all();
             return response()->json(
-                $trainningVideos
+                TrainingVideoResource::collection($trainningVideos)
             );
 
         } catch (\Throwable $ex) {
@@ -43,14 +44,14 @@ class TrainningVideoController extends Controller
             }
             if ($request->hasFile('video')) {
                 //video save
-                $trainningVideo_video = $this->saveVideo($request->video,'attachments/trainningVideo/'.$trainningVideo->id);
+                $trainningVideo_video = $this->saveImage($request->video,'attachments/trainningVideo/'.$trainningVideo->id);
                 $trainningVideo->video = $trainningVideo_video;
                 $trainningVideo->save();
             }
 
             return response()->json([
                 'message' => 'TrainningVideo created successfully',
-                'TrainningVideo' => $trainningVideo
+                'TrainningVideo' =>  new TrainingVideoResource(TrainningVideo::find($trainningVideo->id))
 //            $trainningVideo
             ], 201);
         } catch (\Throwable $ex) {
@@ -83,7 +84,7 @@ class TrainningVideoController extends Controller
             }
             return response()->json([
                 'message' => 'trainningVideo Updated successfully',
-                'trainningVideo' => $trainningVideo
+                'trainningVideo' =>  new TrainingVideoResource(TrainningVideo::find($trainningVideo->id))
             ]);
         } catch (\Throwable $ex) {
             return $this->returnError($ex->getCode(), $ex->getMessage());
@@ -101,7 +102,7 @@ class TrainningVideoController extends Controller
             return response()->json([
 //                    'message' => 'Team Show successfully',
 //                    'trainningVideo' => $trainningVideo
-                $trainningVideo
+                new TrainingVideoResource(TrainningVideo::find($trainningVideo->id))
             ]);
 
         } catch (\Throwable $ex) {

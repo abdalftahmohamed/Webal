@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\api\MagazineRequest;
+use App\Http\Resources\MagazineResource;
 use App\Traits\GeneralTrait;
 use App\Traits\ImageTrait;
 use App\Models\Magazine;
@@ -18,7 +19,7 @@ class MagazineController extends Controller
         try {
             $magazines = Magazine::all();
             return response()->json(
-                $magazines
+                MagazineResource::collection($magazines)
             );
 
         }catch (\Throwable $ex) {
@@ -41,7 +42,7 @@ class MagazineController extends Controller
             $magazine->save();
             return response()->json([
                 'message' => 'Magazine created successfully',
-                'client' => $magazine
+                'client' => new MagazineResource(Magazine::find($magazine->id))
 //            $magazine
             ],201);
         } catch (\Throwable $ex) {
@@ -69,7 +70,7 @@ class MagazineController extends Controller
                 }
                 return response()->json([
                     'message' => 'magazine Updated successfully',
-                    'magazine' => $magazine
+                    'magazine' => new MagazineResource(Magazine::find($magazine->id))
                 ]);
         } catch (\Throwable $ex) {
             return $this->returnError($ex->getCode(), $ex->getMessage());
@@ -85,9 +86,9 @@ class MagazineController extends Controller
                 return $this->returnError('E004','this Id not found');
             }
             return response()->json([
-//                    'message' => 'Team Show successfully',
-//                    'magazine' => $magazine
-                $magazine
+//                    'status' => true,
+//                    'data' =>
+                new MagazineResource(Magazine::find($magazine->id))
             ]);
 
         } catch (\Throwable $ex) {

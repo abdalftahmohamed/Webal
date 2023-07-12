@@ -29,7 +29,7 @@ trait ImageTrait
             $file_name = time() . '.' . $file_extension;
             $path = $folder;
             $photo->move($path, $file_name);
-
+//            $photo->storeAs($folder, $file_name);
             return $file_name;
         }
         return null;

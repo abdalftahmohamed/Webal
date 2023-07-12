@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\api\AdvertisementRequest;
+use App\Http\Resources\AdvertisementResource;
 use App\Models\Advertisement;
 use App\Traits\GeneralTrait;
 use App\Traits\ImageTrait;
@@ -19,7 +20,7 @@ class AdvertisementController extends Controller
         try {
             $advertisements = Advertisement::all();
             return response()->json(
-                $advertisements
+                AdvertisementResource::collection($advertisements)
             );
 
         }catch (\Throwable $ex) {
@@ -44,13 +45,13 @@ class AdvertisementController extends Controller
 
             if ($request->hasFile('video')) {
 //                $this->deleteFile('advertisements',$id);
-                $advertisement_video = $this->saveVideo($request->video,'attachments/advertisements/'.$advertisement->id);
+                $advertisement_video = $this->saveImage($request->video,'attachments/advertisements/'.$advertisement->id);
                 $advertisement->video = $advertisement_video;
                 $advertisement->save();
             }
             return response()->json([
                 'message' => 'Advertisement created successfully',
-                'client' => $advertisement
+                'data' => new AdvertisementResource(Advertisement::find($advertisement->id))
 //            $advertisement
             ],201);
         } catch (\Throwable $ex) {
@@ -83,7 +84,7 @@ class AdvertisementController extends Controller
             }
             return response()->json([
                 'message' => 'advertisement Updated successfully',
-                'advertisement' => $advertisement
+                'data' =>  new AdvertisementResource(Advertisement::find($advertisement->id))
             ]);
         } catch (\Throwable $ex) {
             return $this->returnError($ex->getCode(), $ex->getMessage());
@@ -101,7 +102,7 @@ class AdvertisementController extends Controller
             return response()->json([
 //                    'message' => 'Team Show successfully',
 //                    'advertisement' => $advertisement
-                $advertisement
+                new AdvertisementResource(Advertisement::find($advertisement->id))
             ]);
 
         } catch (\Throwable $ex) {
@@ -120,7 +121,7 @@ class AdvertisementController extends Controller
             $advertisement->delete();
             return response()->json([
                 'status' => true,
-                'message' => 'Request Information deleted Successfully',
+                'message' => 'data Information deleted Successfully',
             ]);
         } catch (\Throwable $ex) {
             return $this->returnError($ex->getCode(), $ex->getMessage());

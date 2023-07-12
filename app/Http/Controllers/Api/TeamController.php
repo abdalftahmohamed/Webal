@@ -42,11 +42,12 @@ class TeamController extends Controller
 
             $users=User::where('id','!=',auth()->user()->id)->get();
             $user_create=auth()->user()->name;
+//            return $user_create;
             Notification::send($users,new TeamNotification($team->id,$user_create,$request->name));
 
             return response()->json([
                 'message' => 'Team created successfully',
-                'team' =>new TeamResource(Team::findOrFail($team->id))
+                'team' =>new TeamResource(Team::find($team->id))
             ],201);
         } catch (\Throwable $ex) {
             return $this->returnError($ex->getCode(), $ex->getMessage());
@@ -73,7 +74,7 @@ class TeamController extends Controller
             }
             return response()->json([
                 'message' => 'Team Updated successfully',
-                'team' => new TeamResource(Team::findOrFail($team->id))
+                'team' => new TeamResource(Team::find($team->id))
             ]);
         } catch (\Throwable $ex) {
             return $this->returnError($ex->getCode(), $ex->getMessage());
@@ -90,7 +91,7 @@ class TeamController extends Controller
             }
                 return response()->json([
                     'message' => 'Team Show successfully',
-                    'team' => new TeamResource(Team::findOrFail($id))
+                    'team' => new TeamResource(Team::find($id))
                 ]);
         } catch (\Throwable $ex) {
             return $this->returnError($ex->getCode(), $ex->getMessage());

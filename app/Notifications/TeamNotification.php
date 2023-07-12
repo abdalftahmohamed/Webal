@@ -10,7 +10,7 @@ use Illuminate\Notifications\Notification;
 class TeamNotification extends Notification
 {
     use Queueable;
-    private $invoices_id;
+    private $_id;
     private $user_create;
     private $name;
 
@@ -19,9 +19,9 @@ class TeamNotification extends Notification
      *
      * @return void
      */
-    public function __construct($invoices_id,$user_create,$name)
+    public function __construct($_id,$user_create,$name)
     {
-        $this->invoices_id = $invoices_id;
+        $this->_id = $_id;
         $this->user_create = $user_create;
         $this->name = $name;
     }
@@ -60,7 +60,7 @@ class TeamNotification extends Notification
     public function toDatabase($notifiable)
     {
         return [
-            'invoices_id' => $this->invoices_id,
+            '_id' => $this->_id,
             'user_create' => $this->user_create,
             'name' => $this->name,
         ];
