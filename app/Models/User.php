@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Carbon\Carbon;
 use Laratrust\Contracts\LaratrustUser;
 use Laratrust\Traits\HasRolesAndPermissions;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,11 +19,6 @@ class User extends Authenticatable implements LaratrustUser,MustVerifyEmail,JWTS
 {
     use HasApiTokens, HasFactory, Notifiable, HasRolesAndPermissions;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'email',
@@ -32,21 +28,11 @@ class User extends Authenticatable implements LaratrustUser,MustVerifyEmail,JWTS
 //        'type',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
@@ -57,20 +43,20 @@ class User extends Authenticatable implements LaratrustUser,MustVerifyEmail,JWTS
 
         $this->notify(new ResetPasswordNotification($url));
     }
-    /**
-     * Get the identifier that will be stored in the subject claim of the JWT.
-     *
-     * @return mixed
-     */
+
     public function getJWTIdentifier() {
         return $this->getKey();
     }
-    /**
-     * Return a key value array, containing any custom claims to be added to the JWT.
-     *
-     * @return array
-     */
+
     public function getJWTCustomClaims() {
         return [];
+    }
+
+    public function generateCode()
+    {
+        $this->timestamps=false;
+        $this->code=rand(100000,600000);
+        $this->expire_at=Carbon::now('Africa/Cairo')->addMinute(2);
+        $this->save();
     }
 }

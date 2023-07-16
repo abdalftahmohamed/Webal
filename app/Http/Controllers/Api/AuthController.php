@@ -47,7 +47,7 @@ class AuthController extends Controller
             'password' => 'required|string|min:6',
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 401);
         }
         $user = User::create(array_merge(
             $validator->validated(),
@@ -122,7 +122,7 @@ class AuthController extends Controller
         }
         // Update the user's information
         $user->name = $request->input('name');
-        $user->email = $request->input('email');
+//        $user->email = $request->input('email');
         $user->country_id = $request->input('country_id');
         $user->city_id = $request->input('city_id');
         $user->save();
