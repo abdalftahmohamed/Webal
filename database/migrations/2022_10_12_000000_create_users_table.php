@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('type')->nullable();
             $table->string('code')->nullable();
             $table->dateTime('expire_at')->nullable();
+            $table->enum('status',[0,1,2])->default(0)->nullable();
+
             $table->bigInteger('country_id')->unsigned()->nullable();
             $table->bigInteger('city_id')->unsigned()->nullable();
             $table->rememberToken();
