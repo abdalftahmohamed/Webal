@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CountryController;
 use App\Http\Controllers\Api\ForgotPasswordController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -35,6 +36,7 @@ Route::group(['middleware' => ['api','auth:api']], function ($router) {
     Route::post('updateProfile', [AuthController::class, 'updateProfile']);
     Route::post('password/email', [ForgotPasswordController::class,'forgetPassword'])->withoutMiddleware('auth:api');
     Route::post('password/reset', [ForgotPasswordController::class,'resetPassword'])->withoutMiddleware('auth:api');
+    Route::get('country', [CountryController::class,'index'])->withoutMiddleware('auth:api');
 
 
     Route::group(['middleware' => ['api'], 'prefix' => 'team'], function ($router) {
