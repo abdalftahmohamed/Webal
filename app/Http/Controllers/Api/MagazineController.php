@@ -5,10 +5,14 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\api\MagazineRequest;
 use App\Http\Resources\MagazineResource;
+use App\Models\User;
+use App\Notifications\MagazineNotification;
+use App\Notifications\TeamNotification;
 use App\Traits\GeneralTrait;
 use App\Traits\ImageTrait;
 use App\Models\Magazine;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Notification;
 
 class MagazineController extends Controller
 {
@@ -40,6 +44,14 @@ class MagazineController extends Controller
             $magazine_image = $this->saveImage($request->image,'attachments/magazines/'.$magazine->id);
             $magazine->image = $magazine_image;
             $magazine->save();
+
+            $users=User::where('id','!=',auth()->user()->id)->where('status','1')->get();
+//            return $users;
+            $user_create=auth()->user()->name;
+//            return $user_create;
+            Notification::send($users,new MagazineNotification($magazine->id,$user_create,$request->name));
+
+
             return response()->json([
                 'message' => 'Magazine created successfully',
                 'client' => new MagazineResource(Magazine::find($magazine->id))

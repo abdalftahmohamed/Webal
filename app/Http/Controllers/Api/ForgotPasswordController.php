@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Notifications\ResetPasswordNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\ApiCode;
@@ -29,6 +30,9 @@ class ForgotPasswordController extends Controller
         }
 
         $codeInsert->generateCode();
+
+        #send code to notification by Email
+        $codeInsert->notify(new ResetPasswordNotification);
 
         return response()->json([
             'message' => 'User successfully sent code check it',

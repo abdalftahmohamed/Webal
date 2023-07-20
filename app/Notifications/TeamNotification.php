@@ -14,11 +14,7 @@ class TeamNotification extends Notification
     private $user_create;
     private $name;
 
-    /**
-     * Create a new notification instance.
-     *
-     * @return void
-     */
+
     public function __construct($_id,$user_create,$name)
     {
         $this->_id = $_id;
@@ -26,23 +22,13 @@ class TeamNotification extends Notification
         $this->name = $name;
     }
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
+
     public function via($notifiable)
     {
         return ['database'];
     }
 
-    /**
-     * Get the mail representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
-     */
+
     public function toMail($notifiable)
     {
         return (new MailMessage)
@@ -51,13 +37,8 @@ class TeamNotification extends Notification
                     ->line('Thank you for using our application!');
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function toDatabase($notifiable)
+
+    public function toArray($notifiable)
     {
         return [
             '_id' => $this->_id,

@@ -13,7 +13,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+//        $this->middleware('auth');
     }
 
     /**
@@ -23,6 +23,13 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        //    $plans = $this->retrievePlans();
+        $user = auth()->user();
+
+        return view('dashboard', [
+            'user'=>$user,
+            'intent' => $user->createSetupIntent(),
+//        'plans' => $plans
+        ]);
     }
 }

@@ -11,13 +11,14 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Notifications\ResetPasswordNotification;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Laravel\Cashier\Billable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements LaratrustUser,MustVerifyEmail,JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRolesAndPermissions;
+    use HasApiTokens, HasFactory, Notifiable, HasRolesAndPermissions,Billable;
 
     protected $fillable = [
         'name',

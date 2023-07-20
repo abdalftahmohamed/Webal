@@ -11,10 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('subscriptions', function (Blueprint $table) {
+        Schema::create('plans', function (Blueprint $table) {
             $table->id();
-            $table->string('monthly_subscription')->nullable();
-            $table->string('weekly_subscription')->nullable();
+            $table->string('plan_id');
+            $table->string('name');
+            $table->string('billing_method');
+            $table->tinyInteger('interval_count')->default(1);
+            $table->string('price');
+            $table->string('currency');
             $table->timestamps();
         });
     }
@@ -24,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('subscriptions');
+        Schema::dropIfExists('plans');
     }
 };

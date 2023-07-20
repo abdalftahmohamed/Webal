@@ -1,8 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Auth;
-use Amestsantim\Voucherator\VoucherGenerator;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,41 +20,22 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/voucher', function () {
-    return view('voucher');
+Route::get('/dashboard', [\App\Http\Controllers\HomeController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/store', function () {
-    return view('store');
-});
+Route::get('/subscribe', [SubscriptionController::class, 'showSubscription']);
+Route::post('/subscribe', [SubscriptionController::class, 'processSubscription']);
+Route::get('/welcome', [SubscriptionController::class, 'showWelcome'])->middleware('subscribed');
+Route::post('single-charge', [SubscriptionController::class, 'singleCharge'])->name('single.charge');
+Route::get('plans/create', [SubscriptionController::class, 'showPlanForm'])->name('plans.create');
+Route::post('plans/store', [SubscriptionController::class, 'savePlan'])->name('plans.store');
 
-Route::get('/video', function () {
-    return view('video');
-});
-Route::get('/magazine', function () {
-    return view('magazine');
-});
 
-Route::get('/notification', function () {
-    return view('notification');
-});
 
-Route::get('/performance', function () {
-    return view('performance');
-});
-
-Route::get('/subscripe', function () {
-    return view('subscripe');
-});
-
-Route::get('/subscripe2', function () {
-    return view('subscripe2');
-});
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-Route::get('/vo', function () {
-    $v = new VoucherGenerator();
-    return  $v->letters()->length(12)->lowerCase()->generate()[0];
-});
+require __DIR__.'/auth.php';

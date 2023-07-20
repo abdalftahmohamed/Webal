@@ -15,17 +15,17 @@
                     @endif
 
                     {{ __('You are logged in!') }}
+                        <hr>
+                        <hr>
+
                 </div>
 
             </div>
-            <span>
-                @if (auth()->user()->hasRole('user'))
 
 
-                Nawar
-            </span>
-            @endif
+
         </div>
     </div>
 </div>
 @endsection
+
