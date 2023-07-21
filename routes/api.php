@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CountryController;
 use App\Http\Controllers\Api\ForgotPasswordController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\AccessTokenController;
 
@@ -22,21 +23,23 @@ Route::get('/login', function () {
 });
 
 
-Route::group(['middleware' => ['api','auth:api']], function ($router) {
+Route::group(['middleware' => ['api','isAdmin']], function ($router) {
 
-    Route::post('login' ,'App\Http\Controllers\Api\AuthController@login')->withoutMiddleware('auth:api');
-    Route::post('register' ,'App\Http\Controllers\Api\AuthController@register')->withoutMiddleware('auth:api');
-    Route::post('logout', 'App\Http\Controllers\Api\AuthController@logout');
-    Route::get('allusers', 'App\Http\Controllers\Api\AuthController@allusers');
-    Route::post('refresh', 'App\Http\Controllers\Api\AuthController@refresh');
-    Route::get('usersProfile', 'App\Http\Controllers\Api\AuthController@usersProfile');
-    Route::get('userProfileById', 'App\Http\Controllers\Api\AuthController@userProfilebyid');
-    Route::put('update_user', 'App\Http\Controllers\Api\AuthController@update');
-    Route::post('delete', 'App\Http\Controllers\Api\AuthController@destroy');
+    Route::post('login' ,[AuthController::class, 'login'])->withoutMiddleware('isAdmin');
+    Route::post('register' ,[AuthController::class, 'register'])->withoutMiddleware('isAdmin');
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::get('allusers', [AuthController::class, 'allusers'])->middleware('RoleIsAdmin');
+    Route::post('refresh', [AuthController::class, 'refresh']);
+    Route::get('usersProfile', [AuthController::class, 'usersProfile']);
+    Route::get('userProfileById', [AuthController::class, 'userProfilebyid']);
+    Route::post('update_user', [AuthController::class, 'update'])->middleware('RoleIsAdmin');
+    Route::post('delete', [AuthController::class, 'destroy']);
     Route::post('updateProfile', [AuthController::class, 'updateProfile']);
-    Route::post('password/email', [ForgotPasswordController::class,'forgetPassword'])->withoutMiddleware('auth:api');
-    Route::post('password/reset', [ForgotPasswordController::class,'resetPassword'])->withoutMiddleware('auth:api');
-    Route::get('country', [CountryController::class,'index'])->withoutMiddleware('auth:api');
+    Route::post('password/email', [ForgotPasswordController::class,'forgetPassword'])->withoutMiddleware('isAdmin');
+    Route::post('password/reset', [ForgotPasswordController::class,'resetPassword'])->withoutMiddleware('isAdmin');
+    Route::get('show/notification', [AuthController::class,'showNotification']);
+    Route::get('read/notification', [AuthController::class,'readNotification']);
+    Route::get('country', [CountryController::class,'index'])->withoutMiddleware('isAdmin');
 
 
     Route::group(['middleware' => ['api'], 'prefix' => 'team'], function ($router) {
@@ -192,3 +195,20 @@ Route::group(['middleware' => ['api','auth:api']], function ($router) {
 
 });
 
+//
+//Route::get('/plans', function() {
+//    $plans = Http::get('https://jsonplaceholder.typicode.com/posts');
+//
+//    return $plans;
+//
+//
+//
+//    $ch = curl_init();
+//    curl_setopt($ch, CURLOPT_URL, 'https://jsonplaceholder.typicode.com/posts');
+//    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//    curl_setopt($ch, CURLOPT_POSTFIELDS, array());
+//    $response = curl_exec($ch);
+//    var_export($response);
+//
+//    return $response;
+//});

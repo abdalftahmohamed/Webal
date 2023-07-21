@@ -40,11 +40,11 @@ class TeamController extends Controller
             $team->image = $team_image;
             $team->save();
 
-            $users=User::where('id','!=',auth()->user()->id)->where('status','1')->get();
+            $users=User::where('id','!=',auth('api')->user()->id)->where('status','1')->get();
 //            return $users;
-            $user_create=auth()->user()->name;
+            $user_create=auth('api')->user()->name;
 //            return $user_create;
-            Notification::send($users,new TeamNotification($team->id,$user_create,$request->name));
+            Notification::send($users,new TeamNotification($team->id,$user_create,$request->name,$team_image));
 
 //            $team->notify(new TeamNotification($team->id,$user_create,$request->name));
             return response()->json([

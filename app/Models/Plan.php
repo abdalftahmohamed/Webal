@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class Plan extends Model
 {
     use HasFactory;
-    protected $guarded=[''];
+    protected $fillable = ['plan_id', 'name', 'billing_method', 'interval_count', 'price', 'currency'];
 }

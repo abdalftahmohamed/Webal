@@ -16,8 +16,9 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable implements LaratrustUser,MustVerifyEmail,JWTSubject
+class User extends Authenticatable implements LaratrustUser,JWTSubject
 {
+//MustVerifyEmail
     use HasApiTokens, HasFactory, Notifiable, HasRolesAndPermissions,Billable;
 
     protected $fillable = [
@@ -26,7 +27,10 @@ class User extends Authenticatable implements LaratrustUser,MustVerifyEmail,JWTS
         'password',
         'country_id',
         'city_id',
-//        'type',
+        'type',
+        'status',
+        'code',
+        'expire_at',
     ];
 
     protected $hidden = [

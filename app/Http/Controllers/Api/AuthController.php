@@ -4,6 +4,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -30,7 +31,7 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-        if (! $token = auth()->attempt($validator->validated())) {
+        if (! $token = auth('api')->attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
         return $this->createNewToken($token);
@@ -60,31 +61,22 @@ class AuthController extends Controller
 
 
     public function update(UserRequest $request){
-
+//return $request;
         $user = User::findOrFail($request->id);
         if ($user){
-            if ($user->type == 'admin'){
-
                 $data['name']  =$request->name ? $request->name : $user->name;
                 $data['email'] = $request->email ? $request->email : $user->email;
 //                $data['password'] = $request->password ? $request->password : $user->password;
                 $data['country_id'] = $request->country_id ? $request->country_id : $user->country_id;
-                $data['city_id'] = $request->city_id ? $request->country_id : $user->city_id;
-//                $data['type'] = $request->type ? $request->type : $user->type;
-
-
+                $data['city_id'] = $request->city_id ? $request->city_id : $user->city_id;
+                $data['type'] = $request->type ? $request->type : $user->type;
+                $data['status'] = $request->status ? $request->status : $user->status;
                 $user->update($data);
                 return response()->json([
                     'status'=>true,
                     'data'=>$user,
                     'message' => 'User Updated Successfully',
                 ]);
-            }else{
-                return response()->json([
-                    'status'=>false,
-                    'message' => 'This is Admin not updated',
-                ],422);
-            }
         }else{
             return response()->json([
                 'status'=>false,
@@ -94,7 +86,7 @@ class AuthController extends Controller
 
     }
     protected function updateProfile(Request $request){
-        $id_user=auth()->user()->id;
+        $id_user=auth('api')->user()->id;
 
         $user = User::find($id_user);
 
@@ -136,28 +128,28 @@ class AuthController extends Controller
         ],201);
     }
     public function userProfilebyid() {
-       $user=User::find(auth()->user()->id);
+       $user=User::find(auth('api')->user()->id);
         return response()->json([
         'message'=>'true',
          'user'=> $user,
         ]);
     }
     public function logout() {
-        auth()->logout();
+        auth('api')->logout();
         return response()->json(['message' => 'User successfully signed out']);
     }
 
 
 
     public function refresh() {
-        return $this->createNewToken(auth()->refresh());
+        return $this->createNewToken(auth('api')->refresh());
     }
 
 
 
     public function usersProfile() {
 //        dd('hghhh');
-        return response()->json(auth()->user());
+        return response()->json(auth('api')->user());
     }
 
 
@@ -171,8 +163,8 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => auth()->user()
+            'expires_in' => auth('api')->factory()->getTTL() * 60,
+            'user' => auth('api')->user()
         ]);
     }
 
@@ -180,7 +172,7 @@ class AuthController extends Controller
 
     public function destroy()
     {
-        $user=User::find(auth()->user()->id);
+        $user=User::find(auth('api')->user()->id);
 
         if ($user){
             if ($user->type == null){
@@ -204,7 +196,46 @@ class AuthController extends Controller
         }
     }
 
+    public function showNotification()
+    {
+        $user = auth('api')->user();
+//        return $user;
+        $find = DB::table('notifications')->where('notifiable_id', $user->id)->get();
+        if (!$find) {
+            return response()->json([
+                'status' => false,
+                'message' => 'You doesnt have notification',
+            ]);
 
+        }
+        return response()->json([
+            'status' => true,
+            'message' => 'You are read All notification',
+            'data' => $find,
+        ]);
+
+    }
+    public function readNotification()
+    {
+        $user = auth('api')->user();
+//        return $user;
+        $find = DB::table('notifications')
+            ->where('notifiable_id', $user->id)
+            ->update(['read_at' => now()]);
+        if (!$find) {
+            return response()->json([
+                'status' => false,
+                'message' => 'You doesnt have notification',
+            ]);
+
+        }
+        return response()->json([
+            'status' => true,
+            'message' => 'You are read All notification',
+            'data' => $find,
+        ]);
+
+    }
 
 }
 

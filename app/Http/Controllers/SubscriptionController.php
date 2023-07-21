@@ -2,101 +2,148 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Plan as ModelsPlan;
+use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Cashier\Subscription;
+use Stripe\Customer;
 use Stripe\Plan;
+use Stripe\Stripe;
 
 class SubscriptionController extends Controller
 {
-    public function __construct() {
-        $this->middleware('auth');
+//    public function __construct() {
+//        Stripe::setApiKey(env('STRIPE_SECRET'));
+//    }
+    public function showPlanForm()
+    {
+        return view('stripe.plans.create');
     }
-    public function retrievePlans() {
-        $key = \config('services.stripe.secret');
-        $stripe = new \Stripe\StripeClient($key);
-        $plansraw = $stripe->plans->all();
-        $plans = $plansraw->data;
+    public function savePlan(Request $request)
+    {
+        \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
 
-        foreach($plans as $plan) {
-            $prod = $stripe->products->retrieve(
-                $plan->product,[]
-            );
-            $plan->product = $prod;
+        $amount = ($request->amount * 100);
+
+        try {
+            $plan = Plan::create([
+                'amount' => $amount,
+                'currency' => $request->currency,
+                'interval' => $request->billing_period,
+                'interval_count' => $request->interval_count,
+                'product' => [
+                    'name' => $request->name
+                ]
+            ]);
+
+            ModelsPlan::create([
+                'plan_id' => $plan->id,
+                'name' => $request->name,
+                'price' => $plan->amount,
+                'billing_method' => $plan->interval,
+                'currency' => $plan->currency,
+                'interval_count' => $plan->interval_count
+            ]);
+
         }
-        return $plans;
-    }
-    public function showSubscription() {
-        $plans = $this->retrievePlans();
-        $user = Auth::user();
+        catch(Exception $ex){
+            dd($ex->getMessage());
+        }
 
-        return view('seller.pages.subscribe', [
-            'user'=>$user,
-            'intent' => $user->createSetupIntent(),
-            'plans' => $plans
+        return "success";
+    }
+    public function allPlans()
+    {
+        $basic = ModelsPlan::where('name', 'basic')->first();
+        $professional = ModelsPlan::where('name', 'professional')->first();
+        $enterprise = ModelsPlan::where('name', 'enterprise')->first();
+        return view('stripe.plans', compact( 'basic', 'professional', 'enterprise'));
+    }
+    public function checkout($planId)
+    {
+        $plan = ModelsPlan::where('plan_id', $planId)->first();
+        if(! $plan){
+            return back()->withErrors([
+                'message' => 'Unable to locate the plan'
+            ]);
+        }
+        $user = User::find(auth()->user()->id);
+        return view('stripe.plans.checkout', [
+            'plan' => $plan,
+            'intent' => $user->createSetupIntent()
         ]);
     }
-    public function processSubscription(Request $request)
+    public function processPlan(Request $request)
     {
-        $user = Auth::user();
-        $paymentMethod = $request->input('payment_method');
-
+        $user = auth()->user();
         $user->createOrGetStripeCustomer();
-        $user->addPaymentMethod($paymentMethod);
-        $plan = $request->input('plan');
+        $paymentMethod = null;
+        $paymentMethod = $request->payment_method;
+        if($paymentMethod != null){
+            $paymentMethod = $user->addPaymentMethod($paymentMethod);
+        }
+        $plan = $request->plan_id;
+
         try {
-            $user->newSubscription('default', $plan)->create($paymentMethod, [
-                'email' => $user->email
+            $user->newSubscription(
+                'default', $plan
+            )->create( $paymentMethod != null ? $paymentMethod->id: '');
+        }
+        catch(Exception $ex){
+            return back()->withErrors([
+                'error' => 'Unable to create subscription due to this issue '. $ex->getMessage()
             ]);
-        } catch (\Exception $e) {
-            return back()->withErrors(['message' => 'Error creating subscription. ' . $e->getMessage()]);
         }
 
-        return redirect('dashboard');
+        $request->session()->flash('alert-success', 'You are subscribed to this plan');
+        return to_route('plans.checkout', $plan);
     }
+    public function allSubscriptions()
+    {
+        if (auth()->user()->onTrial('default')) {
+            dd('trial');
+        }
+        $subscriptions = Subscription::where('user_id', auth()->id())->get();
+        return view('stripe.subscriptions.index', compact('subscriptions'));
+    }
+    public function cancelSubscriptions(Request $request)
+    {
+        $subscriptionName = $request->subscriptionName;
+        if($subscriptionName){
+            $user = auth()->user();
+            $user->subscription($subscriptionName)->cancel();
+            return 'subsc is canceled';
+        }
+    }
+    public function resumeSubscriptions(Request $request)
+    {
+        $user = auth()->user();
+        $subscriptionName = $request->subscriptionName;
+        if($subscriptionName){
+            $user->subscription($subscriptionName)->resume();
+            return 'subsc is resumed';
+        }
+    }
+
     public function singleCharge(Request $request)
     {
 //        return $request->all();
-        $amount = ($request->amount * 100);
-        $paymentMethod=$request->payment_method;
-        $user= auth()->user();
-        $user->createOrGetStripeCustomer();
-        $paymentMethod=$user->addPaymentMethod($paymentMethod);
 
-        $user->charge($amount,$paymentMethod->id);
-        return redirect()->back();
-    }
-
-    public function showPlanForm(){
-        return view('stripe.plans.create');
-    }
-    public function savePlan(Request $request){
-        \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
-        $amount = ($request->amount * 100);
         try {
-            $plan= Plan::create([
-                'amount'=>$amount,
-                'currency'=>$request->currency,
-                'interval'=>$request->billing_period,
-                'interval_count'=>$request->interval_count,
-                'product'=>[
-                    'name'=>$request->name,
-                ]
-            ]);
-//            return $plan;
-            \App\Models\Plan::create([
-                'plan_id'=>$plan->id,
-                'name'=>$request->name,
-                'billing_method'=>$plan->interval,
-                'price'=>$plan->amount,
-                'currency'=>$plan->currency,
-                'interval_count'=>$plan->interval_count,
+            $amount = ($request->amount * 100);
+            $paymentMethod=$request->payment_method;
+            $user= auth()->user();
 
-            ]);
+            $user->createOrGetStripeCustomer();
+            $paymentMethod=$user->addPaymentMethod($paymentMethod);
 
-        }catch (\Exception $ex){
-            dd($ex->getMessage());
+            $user->charge($amount,$paymentMethod->id);
+            return redirect()->back();
         }
-        return 'success';
-
+        catch (Exception $exception){
+            return redirect()->back();
+        }
     }
 }

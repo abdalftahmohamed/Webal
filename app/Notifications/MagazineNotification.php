@@ -13,13 +13,15 @@ class MagazineNotification extends Notification
     private $_id;
     private $user_create;
     private $name;
+    private $magazine_image;
 
 
-    public function __construct($_id,$user_create,$name)
+    public function __construct($_id,$user_create,$name,$magazine_image)
     {
         $this->_id = $_id;
         $this->user_create = $user_create;
         $this->name = $name;
+        $this->magazine_image=$magazine_image;
     }
 
 
@@ -44,6 +46,7 @@ class MagazineNotification extends Notification
             '_id' => $this->_id,
             'user_create' => $this->user_create,
             'name' => $this->name,
+            'image_path' => $this->magazine_image,
         ];
     }
 }
