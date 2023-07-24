@@ -21,7 +21,7 @@ class CustomerResource extends JsonResource
 //            'bank_name_en' => $this->bank_name['en'],
 //            'bank_name_ar' => $this->bank_name['ar'],
             'bank_name' => $this->bank_name,
-            'Image' => url('storage/attachments/banks/'.$this->id.'/'. $this->image_path),
+            'Image' => url('attachments/banks/'.$this->id.'/'. $this->image_path),
             'bank_information' => $this->bank_information,
             'bank_phone' => $this->bank_phone,
             'bank_code' => $this->bank_code,

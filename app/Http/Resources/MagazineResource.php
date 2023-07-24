@@ -21,7 +21,7 @@ class MagazineResource extends JsonResource
             'datesend' => $this->datesend,
             'author' => $this->author,
             'description'=>$this->description,
-            'image' => url('storage/attachments/magazines/'.$this->id.'/'. $this->image),
+            'image' => url('attachments/magazines/'.$this->id.'/'. $this->image),
         ];
     }
 }

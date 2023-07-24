@@ -18,8 +18,8 @@ class AdvertisementResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'description'=>$this->description,
-            'image' => url('storage/attachments/advertisements/'.$this->id.'/'. $this->image),
-            'video' => url('storage/attachments/advertisements/'.$this->id.'/'. $this->video),
+            'image' => url('attachments/advertisements/'.$this->id.'/'. $this->image),
+            'video' => url('attachments/advertisements/'.$this->id.'/'. $this->video),
         ];
     }
 }
