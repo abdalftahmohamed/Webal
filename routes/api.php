@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CountryController;
 use App\Http\Controllers\Api\ForgotPasswordController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\AccessTokenController;
@@ -21,6 +22,8 @@ use App\Http\Controllers\api\AccessTokenController;
 Route::get('/login', function () {
     echo 'some thing went wrong';
 });
+
+
 
 
 Route::group(['middleware' => ['api','isAdmin']], function ($router) {
@@ -94,13 +97,20 @@ Route::group(['middleware' => ['api','isAdmin']], function ($router) {
         Route::post('delete/{id}', '\App\Http\Controllers\Api\NotificationController@destroy');
     });
 
-    Route::group(['middleware' => ['api'], 'prefix' => 'subscription'], function ($router) {
-        Route::get('show_all', '\App\Http\Controllers\Api\SubscriptionController@index');
-        Route::post('save', '\App\Http\Controllers\Api\SubscriptionController@store');
-        Route::post('show/{id}', '\App\Http\Controllers\Api\SubscriptionController@show');
-        Route::post('update/{id}', '\App\Http\Controllers\Api\SubscriptionController@update');
-        Route::post('delete/{id}', '\App\Http\Controllers\Api\SubscriptionController@destroy');
+    Route::group(['middleware' => ['api'], 'prefix' => 'plan'], function ($router) {
+        Route::get('show_all', '\App\Http\Controllers\Api\SubscriptionController@showPlans');
+        Route::post('savePlan', '\App\Http\Controllers\Api\SubscriptionController@savePlan');
+        Route::post('checkoutPlan', '\App\Http\Controllers\Api\SubscriptionController@checkout');
+        Route::get('allSubscriptions', '\App\Http\Controllers\Api\SubscriptionController@allSubscriptions');
     });
+
+//    Route::group(['middleware' => ['api'], 'prefix' => 'subscription'], function ($router) {
+//        Route::get('show_all', '\App\Http\Controllers\Api\SubscriptionController@index');
+//        Route::post('save', '\App\Http\Controllers\Api\SubscriptionController@store');
+//        Route::post('show/{id}', '\App\Http\Controllers\Api\SubscriptionController@show');
+//        Route::post('update/{id}', '\App\Http\Controllers\Api\SubscriptionController@update');
+//        Route::post('delete/{id}', '\App\Http\Controllers\Api\SubscriptionController@destroy');
+//    });
 
     Route::group(['middleware' => ['api'], 'prefix' => 'topnotification'], function ($router) {
         Route::get('show_all', '\App\Http\Controllers\Api\TopNotificationController@index');

@@ -14,9 +14,6 @@ use Stripe\Stripe;
 
 class SubscriptionController extends Controller
 {
-//    public function __construct() {
-//        Stripe::setApiKey(env('STRIPE_SECRET'));
-//    }
     public function showPlanForm()
     {
         return view('stripe.plans.create');
@@ -75,6 +72,7 @@ class SubscriptionController extends Controller
             'intent' => $user->createSetupIntent()
         ]);
     }
+
     public function processPlan(Request $request)
     {
         $user = auth()->user();

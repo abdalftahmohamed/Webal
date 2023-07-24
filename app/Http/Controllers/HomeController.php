@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use Laravel\Cashier\Subscription;
+use Stripe\Customer;
+use Stripe\Plan;
+use Stripe\Stripe;
 class HomeController extends Controller
 {
     /**

@@ -19,7 +19,7 @@ class TeamResource extends JsonResource
             'name' => $this->name,
             'namesection' => $this->namesection,
             'description'=>$this->description,
-            'image' => url('storage/attachments/teams/'.$this->id.'/'. $this->image),
+            'image' => url('attachments/teams/'.$this->id.'/'. $this->image),
         ];
     }
 }
