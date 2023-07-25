@@ -19,7 +19,7 @@ class TrainingVideoResource extends JsonResource
             'video Title' => $this->video_title,
             'video Description'=>$this->video_description,
             'simple Description'=>$this->simple_description,
-            'Image' => url('attachments/trainningVideo/'.$this->id.'/'. $this->image),
+//            'Image' => url('attachments/trainningVideo/'.$this->id.'/'. $this->image),
             'Video' => url('attachments/trainningVideo/'.$this->id.'/'. $this->video),
         ];
     }
