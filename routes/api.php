@@ -3,7 +3,6 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CountryController;
 use App\Http\Controllers\Api\ForgotPasswordController;
-use App\Http\Controllers\Api\SubscriptionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
@@ -72,7 +71,7 @@ Route::group(['middleware' => ['api','isAdmin']], function ($router) {
     Route::group(['middleware' => ['api'], 'prefix' => 'performance'], function ($router) {
         Route::get('show_all', 'App\Http\Controllers\Api\PerformanceController@index');
         Route::post('save', 'App\Http\Controllers\Api\PerformanceController@store');
-        Route::post('show/{month_id}', 'App\Http\Controllers\Api\PerformanceController@show');
+        Route::post('show/{id}', 'App\Http\Controllers\Api\PerformanceController@show');
         Route::post('update/{id}', 'App\Http\Controllers\Api\PerformanceController@update');
         Route::post('delete/{id}', 'App\Http\Controllers\Api\PerformanceController@destroy');
     });
@@ -101,8 +100,7 @@ Route::group(['middleware' => ['api','isAdmin']], function ($router) {
     Route::group(['middleware' => ['api'], 'prefix' => 'plan'], function ($router) {
         Route::get('show_all', 'App\Http\Controllers\Api\SubscriptionController@showPlans');
         Route::post('savePlan', 'App\Http\Controllers\Api\SubscriptionController@savePlan');
-        Route::post('checkout', [SubscriptionController::class, 'checkout']);
-        Route::post('proccessCheckout', 'App\Http\Controllers\Api\SubscriptionController@proccessCheckout');
+        Route::post('checkoutPlan', 'App\Http\Controllers\Api\SubscriptionController@checkout');
         Route::get('allSubscriptions', 'App\Http\Controllers\Api\SubscriptionController@allSubscriptions');
     });
 
