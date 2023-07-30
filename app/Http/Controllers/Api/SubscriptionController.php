@@ -12,7 +12,9 @@ use App\Traits\GeneralTrait;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Stripe\Exception\CardException;
 use Stripe\Plan;
+use Stripe\Stripe;
 
 class SubscriptionController extends Controller
 {
@@ -76,12 +78,27 @@ class SubscriptionController extends Controller
             ], 502);
         }
     }
-
     public function checkout(Request $request)
     {
+        $plan = ModelsPlan::where('plan_id', $request->planId)->first();
+        if(! $plan){
+            return back()->withErrors([
+                'message' => 'Unable to locate the plan'
+            ]);
+        }
+        $user = User::find(auth()->user()->id);
+        return view('stripe.plans.checkout', [
+            'plan' => $plan,
+            'intent' => $user->createSetupIntent()
+        ]);
+    }
+
+    public function proccessCheckout(Request $request)
+    {
         try {
-//            return $user;
+//            return $request;
             $user = auth('api')->user();
+//return $user;
 
             $user->createOrGetStripeCustomer();
             $paymentMethod = null;
@@ -214,6 +231,67 @@ class SubscriptionController extends Controller
             ]);
         } catch (\Throwable $ex) {
             return $this->returnError($ex->getCode(), $ex->getMessage());
+        }
+    }
+
+
+
+
+
+    public function subscribe(Request $request)
+    {
+        try {
+            // Add the Stripe library and set your Stripe secret key
+            Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
+
+            // Get the necessary data from the request
+            $paymentMethod = $request->input('payment_method');
+            $planId = $request->input('plan_id');
+
+            // Create a customer and subscribe them to the plan
+            $customer = \Stripe\Customer::create([
+                'payment_method' => $paymentMethod,
+                'email' => $request->user()->email, // assuming you have a user model
+                'invoice_settings' => [
+                    'default_payment_method' => $paymentMethod,
+                ],
+            ]);
+
+            $subscription = \Stripe\Subscription::create([
+                'customer' => $customer->id,
+                'items' => [['plan' => $planId]],
+                'expand' => ['latest_invoice.payment_intent'],
+            ]);
+
+            // Return the subscription details to the client
+            return response()->json($subscription);
+        } catch (CardException $e) {
+            // Handle Stripe card errors and return an error response
+            return response()->json(['error' => $e->getMessage()], 422);
+        } catch (\Exception $e) {
+            // Handle other exceptions and return an error response
+            return response()->json(['error' => 'An error occurred while subscribing'], 500);
+        }
+    }
+
+    public function cancelSubscription(Request $request)
+    {
+        try {
+            // Add the Stripe library and set your Stripe secret key
+            Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
+
+            // Get the necessary data from the request
+            $subscriptionId = $request->input('subscription_id');
+
+            // Cancel the subscription
+            $subscription = \Stripe\Subscription::retrieve($subscriptionId);
+            $subscription->cancel();
+
+            // Return a success message to the client
+            return response()->json(['message' => 'Subscription canceled successfully']);
+        } catch (\Exception $e) {
+            // Handle exceptions and return an error response
+            return response()->json(['error' => 'An error occurred while canceling the subscription'], 500);
         }
     }
 }

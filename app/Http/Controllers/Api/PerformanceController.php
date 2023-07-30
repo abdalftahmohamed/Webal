@@ -75,10 +75,10 @@ class PerformanceController extends Controller
 
     }
 
-    public function show( $id):  JsonResponse
+    public function show($month_id):  JsonResponse
     {
         try {
-            $performance =Performance::find($id);
+            $performance =Performance::where('month_id',$month_id)->get();
             if (!$performance){
                 return $this->returnError('E004','this Id not found');
             }

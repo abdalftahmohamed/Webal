@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class TrainingVideoResource extends JsonResource
+class NotificationDataResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,12 +14,12 @@ class TrainingVideoResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $data = json_decode($this->data, true);
         return [
             'id' => $this->id,
-            'video Title' => $this->video_title,
-            'video Description'=>$this->video_description,
-            'simple Description'=>$this->simple_description,
-            'Video' => url('attachments/trainningVideo/'.$this->id.'/'. $this->video),
+            'user_create' => $data['user_create'] ?? null,
+            'name' => $data['name'] ?? null,
+
         ];
     }
 }

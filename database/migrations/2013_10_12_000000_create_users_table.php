@@ -18,17 +18,19 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
             $table->string('type')->nullable();
+            $table->string('country')->nullable();
+            $table->string('city')->nullable();
             $table->string('code')->nullable();
             $table->dateTime('expire_at')->nullable();
             $table->enum('status',[0,1,2])->default(0)->nullable();
-
-            $table->bigInteger('country_id')->unsigned()->nullable();
-            $table->bigInteger('city_id')->unsigned()->nullable();
             $table->rememberToken();
             $table->timestamps();
+//            $table->bigInteger('country_id')->unsigned()->nullable();
+//            $table->bigInteger('city_id')->unsigned()->nullable();
 
-            $table->foreign('country_id')->references('id')->on('countries');
-            $table->foreign('city_id')->references('id')->on('cities');
+
+//            $table->foreign('country_id')->references('id')->on('countries');
+//            $table->foreign('city_id')->references('id')->on('cities');
         });
     }
 

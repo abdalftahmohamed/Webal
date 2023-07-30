@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
+use App\Http\Resources\NotificationDataResource;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -10,19 +11,8 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    /**
-     * Create a new AuthController instance.
-     *
-     * @return void
-     */
-    public function __construct() {
-//        $this->middleware('auth:api', ['except' => ['login', 'register']]);
-    }
-    /**
-     * Get a JWT via given credentials.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
+
+
     public function login(Request $request){
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
@@ -36,16 +26,14 @@ class AuthController extends Controller
         }
         return $this->createNewToken($token);
     }
-    /**
-     * Register a User.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
+
     public function register(Request $request) {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|min:6',
+            'country' => 'string',
+            'city' => 'string',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 401);
@@ -67,8 +55,8 @@ class AuthController extends Controller
                 $data['name']  =$request->name ? $request->name : $user->name;
                 $data['email'] = $request->email ? $request->email : $user->email;
 //                $data['password'] = $request->password ? $request->password : $user->password;
-                $data['country_id'] = $request->country_id ? $request->country_id : $user->country_id;
-                $data['city_id'] = $request->city_id ? $request->city_id : $user->city_id;
+                $data['country'] = $request->country ? $request->country : $user->country;
+                $data['city'] = $request->city ? $request->city : $user->city;
                 $data['type'] = $request->type ? $request->type : $user->type;
                 $data['status'] = $request->status ? $request->status : $user->status;
                 $user->update($data);
@@ -93,8 +81,8 @@ class AuthController extends Controller
         $rules = [
             "email" => "email|unique:users,email,".$id_user,
             "password" => "string|confirmed|min:6",
-            "country_id" => "integer",
-            "city_id" => "integer",
+            "country" => "string",
+            "city" => "string",
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -200,7 +188,7 @@ class AuthController extends Controller
     {
         $user = auth('api')->user();
 //        return $user;
-        $find = DB::table('notifications')->where('notifiable_id', $user->id)->get();
+        $find = DB::table('notifications')->where('notifiable_id', $user->id);
         if (!$find) {
             return response()->json([
                 'status' => false,
@@ -211,7 +199,7 @@ class AuthController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'You are read All notification',
-            'data' => $find,
+            'data' =>  NotificationDataResource::collection($find->get()),
         ]);
 
     }

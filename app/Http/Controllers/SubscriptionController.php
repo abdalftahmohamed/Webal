@@ -75,6 +75,7 @@ class SubscriptionController extends Controller
 
     public function processPlan(Request $request)
     {
+        return $request;
         $user = auth()->user();
         $user->createOrGetStripeCustomer();
         $paymentMethod = null;

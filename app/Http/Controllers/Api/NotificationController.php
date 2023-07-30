@@ -18,9 +18,10 @@ class NotificationController extends Controller
     {
         try {
             $notifications = Notification::all();
-            return response()->json(
+            return response()->json([
+//                "status"=>true,
                 $notifications
-            );
+            ]);
 
         } catch (\Throwable $ex) {
             return $this->returnError($ex->getCode(), $ex->getMessage());
