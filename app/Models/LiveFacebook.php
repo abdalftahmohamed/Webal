@@ -8,9 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class LiveFacebook extends Model
 {
     use HasFactory;
-    protected $fillable = [
-        'description',
-        'link',
-    ];
+    protected $guarded=[''];
 }
 

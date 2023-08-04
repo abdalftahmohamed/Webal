@@ -21,7 +21,7 @@ class ProductResource extends JsonResource
             'accrual' => $this->accrual,
             'age_limit' => $this->age_limit,
             'salary_limit'=>$this->salary_limit,
-            'Images' =>ImagesProductResource::collection($this->images)
+            'images' =>ImagesProductResource::collection($this->images)
         ];
     }
 }
