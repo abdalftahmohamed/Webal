@@ -134,7 +134,7 @@ Route::group(['middleware' => ['api','isAdmin']], function ($router) {
 //        Route::post('delete/{id}', 'App\Http\Controllers\Api\SubscriptionController@destroy');
 //    });
 
-    Route::group(['middleware' => ['api'], 'prefix' => 'topnotification'], function ($router) {
+    Route::group(['middleware' => ['api'], 'prefix' => 'top_notification'], function ($router) {
         Route::get('show_all', [TopNotificationController::class,'index']);
         Route::post('save', [TopNotificationController::class,'store']);
         Route::post('show/{id}', [TopNotificationController::class,'show']);

@@ -36,7 +36,6 @@ class TopNotificationController extends Controller
             return response()->json([
                 'message' => 'TopNotification created successfully',
                 'TopNotification' => $TopNotification
-//            $TopNotification
             ], 201);
         } catch (\Throwable $ex) {
             return $this->returnError($ex->getCode(), $ex->getMessage());
@@ -71,9 +70,9 @@ class TopNotificationController extends Controller
                 return $this->returnError('E004', 'this Id not found');
             }
             return response()->json([
-//                    'message' => 'Team Show successfully',
-//                    'notification' => $TopNotification
-                $TopNotification
+                    'message' => 'top_notification Show successfully',
+                    'top_notification' => $TopNotification
+//                $TopNotification
             ]);
 
         } catch (\Throwable $ex) {
