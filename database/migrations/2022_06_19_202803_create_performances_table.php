@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('month_id')->unsigned()->nullable();
             $table->string('sympol')->nullable();#name
+            $table->integer('reached_min')->nullable();
+            $table->integer('reached_max')->nullable();
             $table->string('target')->nullable();#int
-            $table->string('reached')->nullable();
             $table->string('comment')->nullable();#int
             $table->timestamps();
 

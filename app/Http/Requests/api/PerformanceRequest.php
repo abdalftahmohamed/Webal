@@ -28,7 +28,8 @@ class PerformanceRequest extends FormRequest
         return [
             'sympol' => 'required|string|max:50',
             'target' => 'integer',
-            'reached' => 'string',
+            'reached_min' => 'integer',
+            'reached_max' => 'integer|gte:reached_min',
             'comment' => 'string',
             'month_id' => 'required|integer',
         ];

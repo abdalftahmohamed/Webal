@@ -44,7 +44,8 @@ class PerformanceController extends Controller
             $performance = new Performance();
             $performance->sympol = $request->sympol;
             $performance->target = $request->target;
-            $performance->reached = $request->reached;
+            $performance->reached_min = $request->reached_min;
+            $performance->reached_max = $request->reached_max;
             $performance->comment = $request->comment;
             $performance->month_id = $request->month_id;
             $performance->save();
@@ -77,7 +78,8 @@ class PerformanceController extends Controller
 
             $performance->sympol = $request->sympol;
             $performance->target = $request->target;
-            $performance->reached = $request->reached;
+            $performance->reached_min = $request->reached_min;
+            $performance->reached_max = $request->reached_max;
             $performance->comment = $request->comment;
             $performance->month_id = $request->month_id;
             $performance->save();

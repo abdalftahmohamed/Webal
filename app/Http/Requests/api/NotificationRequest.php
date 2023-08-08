@@ -26,9 +26,8 @@ class NotificationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'          => 'required|string|max:70',
-            'number'        => 'required|integer',
-            'datesend'      => 'date',
+            'name'          => 'required|string|max:120',
+            'send_time'      => 'date',
             'description'   => 'string',
         ];
     }
