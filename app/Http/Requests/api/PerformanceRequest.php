@@ -29,7 +29,7 @@ class PerformanceRequest extends FormRequest
             'sympol' => 'required|string|max:50',
             'target' => 'integer',
             'reached' => 'string',
-            'comment' => 'integer',
+            'comment' => 'string',
             'month_id' => 'required|integer',
         ];
     }
