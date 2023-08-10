@@ -20,9 +20,15 @@ class NotificationController extends Controller
     {
         try {
             $notifications = Notificationcreate::all();
+            $notificationWithUrls = $notifications->map(function ($notification) {
+                $notification->image=URL::asset('attachments/notification/image/'.$notification->id.'/'.$notification->image);
+                $notification->video=URL::asset('attachments/notification/video/'.$notification->id.'/'.$notification->video);
+                return $notification;
+            });
+
             return response()->json([
                 "status"=>true,
-                "data"=>$notifications
+                "data"=>$notificationWithUrls
             ]);
 
         } catch (\Throwable $ex) {

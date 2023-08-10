@@ -17,7 +17,8 @@ class PerformanceResource extends JsonResource
         return [
             'id' => $this->id,
             'sympol' => $this->sympol,
-            'reached' => $this->reached_min.'-'.$this->reached_max ,
+            'reached_min' => $this->reached_min,
+            'reached_max' => $this->reached_max,
             'target'=>$this->target,
             'comment' => $this->comment,
             'month' => $this->months->name,
