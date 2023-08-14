@@ -65,9 +65,9 @@ class SubscriptionController extends Controller
     {
         try {
             $plans = ModelsPlan::all();
-            foreach ($plans as $plan) {
-                $plan->price = $plan->price / 100;
-            }
+//            foreach ($plans as $plan) {
+//                $plan->price = $plan->price / 100;
+//            }
             return response()->json([
                 'status' => true,
                 'message' => 'plan Show successfully',
@@ -187,7 +187,6 @@ class SubscriptionController extends Controller
         }
     }
 
-
     public function store(SubscriptionRequest $request): JsonResponse
     {
         try {
@@ -265,10 +264,6 @@ class SubscriptionController extends Controller
             return $this->returnError($ex->getCode(), $ex->getMessage());
         }
     }
-
-
-
-
 
     public function subscribe(Request $request)
     {

@@ -123,14 +123,6 @@ Route::group(['middleware' => ['api','isAdmin']], function ($router) {
         Route::post('showUser', [SubscriptionController::class,'showUser']);
     });
 
-//    Route::group(['middleware' => ['api'], 'prefix' => 'subscription'], function ($router) {
-//        Route::get('show_all', 'App\Http\Controllers\Api\SubscriptionController@index');
-//        Route::post('save', 'App\Http\Controllers\Api\SubscriptionController@store');
-//        Route::post('show/{id}', 'App\Http\Controllers\Api\SubscriptionController@show');
-//        Route::post('update/{id}', 'App\Http\Controllers\Api\SubscriptionController@update');
-//        Route::post('delete/{id}', 'App\Http\Controllers\Api\SubscriptionController@destroy');
-//    });
-
     Route::group(['middleware' => ['api'], 'prefix' => 'top_notification'], function ($router) {
         Route::get('show_all', [TopNotificationController::class,'index']);
         Route::post('save', [TopNotificationController::class,'store']);
