@@ -116,14 +116,11 @@ Route::group(['middleware' => ['api','isAdmin']], function ($router) {
     });
 
     Route::group(['middleware' => ['api'], 'prefix' => 'plan'], function ($router) {
-        Route::get('show_all', 'App\Http\Controllers\Api\SubscriptionController@showPlans');
-        Route::post('savePlan', 'App\Http\Controllers\Api\SubscriptionController@savePlan');
-        Route::post('checkoutPlan', 'App\Http\Controllers\Api\SubscriptionController@checkout');
-        Route::get('allSubscriptions', 'App\Http\Controllers\Api\SubscriptionController@allSubscriptions');
         Route::get('show_all', [SubscriptionController::class,'showPlans']);
-        Route::post('savePlan', [SubscriptionController::class,'savePlan']);
+        Route::post('savePlan', [SubscriptionController::class,'savePlan'])->middleware('RoleIsAdmin');
         Route::post('checkoutPlan', [SubscriptionController::class,'checkout']);
-        Route::post('allSubscriptions', [SubscriptionController::class,'allSubscriptions']);
+        Route::get('allSubscriptions', [SubscriptionController::class,'allSubscriptions'])->middleware('RoleIsAdmin');
+        Route::post('showUser', [SubscriptionController::class,'showUser']);
     });
 
 //    Route::group(['middleware' => ['api'], 'prefix' => 'subscription'], function ($router) {

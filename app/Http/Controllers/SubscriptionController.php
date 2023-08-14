@@ -38,7 +38,7 @@ class SubscriptionController extends Controller
             ModelsPlan::create([
                 'plan_id' => $plan->id,
                 'name' => $request->name,
-                'price' => $plan->amount,
+                'price' => $plan->amount+0.99,
                 'billing_method' => $plan->interval,
                 'currency' => $plan->currency,
                 'interval_count' => $plan->interval_count

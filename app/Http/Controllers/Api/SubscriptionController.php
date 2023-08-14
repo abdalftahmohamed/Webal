@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\api\PlanRequest;
 use App\Http\Requests\api\SubscriptionRequest;
 use App\Models\Plan as ModelsPlan;
+use App\Models\Subscripe;
 use App\Models\Subscription;
 use App\Models\User;
 use App\Traits\GeneralTrait;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,9 +21,9 @@ use Stripe\Stripe;
 class SubscriptionController extends Controller
 {
     use GeneralTrait;
+
     public function savePlan(PlanRequest $request)
     {
-//        return $request;
         \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
         $amount = ($request->amount * 100);
         try {
@@ -43,7 +45,6 @@ class SubscriptionController extends Controller
                 'currency' => $plan->currency,
                 'interval_count' => $plan->interval_count
             ]);
-
         }
         catch(Exception $ex){
             return response()->json([
@@ -64,6 +65,9 @@ class SubscriptionController extends Controller
     {
         try {
             $plans = ModelsPlan::all();
+            foreach ($plans as $plan) {
+                $plan->price = $plan->price / 100;
+            }
             return response()->json([
                 'status' => true,
                 'message' => 'plan Show successfully',
@@ -78,19 +82,51 @@ class SubscriptionController extends Controller
             ], 502);
         }
     }
+
     public function checkout(Request $request)
     {
-        $plan = ModelsPlan::where('plan_id', $request->planId)->first();
-        if(! $plan){
+        $plan = ModelsPlan::where('plan_id', $request->plan_id)->first();
+//        return $plan;
+        if(!$plan){
             return back()->withErrors([
                 'message' => 'Unable to locate the plan'
             ]);
         }
-        $user = User::find(auth()->user()->id);
-        return view('stripe.plans.checkout', [
-            'plan' => $plan,
-            'intent' => $user->createSetupIntent()
+        $user = User::find(auth('api')->user()->id);
+
+//        $intent = $user->createSetupIntent();
+
+        $supscripe=new Subscripe();
+        $supscripe->user_id=$user->id;
+        $supscripe->name=$user->name;
+        $supscripe->plan_id=$request->plan_id;
+        $supscripe->quantity=$request->quantity;
+        $supscripe->payment_type=$request->payment_type;
+        $supscripe->start_at = Carbon::now();
+        if($plan->name == 'basic'){
+            $supscripe->ends_at =Carbon::now()->addDays(7) ;
+        }
+        if($plan->name == 'professional'){
+            $supscripe->ends_at =Carbon::now()->addDays(30) ;
+        }
+        if($plan->name == 'enterprise'){
+            $supscripe->ends_at =Carbon::now()->addDays(365) ;
+        }
+        $supscripe->status='active';
+         $supscripe ->save();
+        return response()->json([
+            'plan' => $plan->name,
+            'subscription' => $supscripe
         ]);
+    }
+
+    public function showUser(){
+        $user = User::find(auth('api')->user()->id);
+       $ss= $user->Subscripe()->get();
+        return response()->json([
+            'subscriptions' => $ss
+        ]);
+
     }
 
     public function proccessCheckout(Request $request)
@@ -127,16 +163,12 @@ class SubscriptionController extends Controller
 
     public function allSubscriptions()
     {
-        if (auth('api')->user()->onTrial('default')) {
-            dd('trial');
-        }
-        $subscriptions = \Laravel\Cashier\Subscription::where('user_id', auth('api')->id())->get();
+   $sub=Subscripe::with('user')->get();
         return response()->json([
-            'status' => true,
-            'message' => 'you checkoutPlan successfully',
-            'subscriptions' =>$subscriptions ,
-        ], 201);
+            'Subscription' => $sub
+        ]);
     }
+
     public function singleCharge(Request $request)
     {
         try {

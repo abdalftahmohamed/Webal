@@ -65,4 +65,9 @@ class User extends Authenticatable implements LaratrustUser,JWTSubject
         $this->expire_at=Carbon::now('Africa/Cairo')->addMinute(2);
         $this->save();
     }
+
+    public function Subscripe()
+    {
+        return $this->hasOne(Subscripe::class);
+    }
 }
