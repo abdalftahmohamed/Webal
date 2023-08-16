@@ -93,7 +93,7 @@ class LiveFacebookController extends Controller
     public function destroy($id): JsonResponse
     {
         try {
-            $LiveFaceBook = LiveFaceBook::find($id);
+            $LiveFaceBook =  LiveFaceBook::find($id);
             if (!$LiveFaceBook) {
                 return $this->returnError('E004', 'this Id not found');
             }
