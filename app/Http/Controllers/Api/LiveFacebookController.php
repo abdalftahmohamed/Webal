@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\LiveFaceBook;
+use App\Models\LiveFacebook;
 use App\Traits\GeneralTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,7 +15,7 @@ class LiveFacebookController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $LiveFaceBooks = LiveFaceBook::all();
+            $LiveFaceBooks = LiveFacebook::all();
             return response()->json(
                 $LiveFaceBooks
             );
@@ -38,7 +38,7 @@ class LiveFacebookController extends Controller
                 $code = $this->returnCodeAccordingToInput($validator);
                 return $this->returnValidationError($code, $validator);
             }
-            $LiveFaceBook = new LiveFaceBook();
+            $LiveFaceBook = new LiveFacebook();
             $LiveFaceBook->description = $request->description;
             $LiveFaceBook->link = $request->link;
             $LiveFaceBook->save();
@@ -56,7 +56,7 @@ class LiveFacebookController extends Controller
     public function update(Request $request, $id): JsonResponse
     {
         try {
-            $LiveFaceBook = LiveFaceBook::find($id);
+            $LiveFaceBook = LiveFacebook::find($id);
             if (!$LiveFaceBook) {
                 return $this->returnError('E004', 'this Id not found');
             }
@@ -76,7 +76,7 @@ class LiveFacebookController extends Controller
     public function show($id): JsonResponse
     {
         try {
-            $LiveFaceBook = LiveFaceBook::find($id);
+            $LiveFaceBook = LiveFacebook::find($id);
             if (!$LiveFaceBook) {
                 return $this->returnError('E004', 'this Id not found');
             }
@@ -93,7 +93,7 @@ class LiveFacebookController extends Controller
     public function destroy($id): JsonResponse
     {
         try {
-            $LiveFaceBook =  LiveFaceBook::find($id);
+            $LiveFaceBook =  LiveFacebook::find($id);
             if (!$LiveFaceBook) {
                 return $this->returnError('E004', 'this Id not found');
             }

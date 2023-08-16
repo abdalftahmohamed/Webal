@@ -19,10 +19,14 @@ class NotificationController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $notifications = Notificationcreate::all();
+            $notifications = Notificationcreate::get();
             $notificationWithUrls = $notifications->map(function ($notification) {
-                $notification->image=URL::asset('attachments/notification/image/'.$notification->id.'/'.$notification->image);
-                $notification->video=URL::asset('attachments/notification/video/'.$notification->id.'/'.$notification->video);
+                if($notification->image != null){
+                    $notification->image=URL::asset('attachments/notification/image/'.$notification->id.'/'.$notification->image);
+                }
+                if($notification->video != null){
+                    $notification->video=URL::asset('attachments/notification/video/'.$notification->id.'/'.$notification->video);
+                }
                 return $notification;
             });
 
@@ -49,15 +53,16 @@ class NotificationController extends Controller
                 $notification_image = $this->saveImage($request->image,'attachments/notification/image/'.$notification->id);
                 $notification->image = $notification_image;
                 $notification->save();
+                $notification->image=URL::asset('attachments/notification/image/'.$notification->id.'/'.$notification->image);
+
             }
             if ($request->hasFile('video')) {
                 //video save
                 $notification_video = $this->saveVideo($request->video,'attachments/notification/video/'.$notification->id);
                 $notification->video = $notification_video;
                 $notification->save();
+                $notification->video=URL::asset('attachments/notification/video/'.$notification->id.'/'.$notification->video);
             }
-            $notification->image=URL::asset('attachments/notification/image/'.$notification->id.'/'.$notification->image);
-            $notification->video=URL::asset('attachments/notification/video/'.$notification->id.'/'.$notification->video);
             return response()->json([
                 "status"=>true,
                 'message' => 'Notification created successfully',
@@ -86,6 +91,7 @@ class NotificationController extends Controller
                 $notification_image = $this->saveImage($request->image,'attachments/notification/image/'.$notification->id);
                 $notification->image = $notification_image;
                 $notification->save();
+                $notification->image=URL::asset('attachments/notification/image/'.$notification->id.'/'.$notification->image);
             }
             if ($request->hasFile('video')) {
                 //video save
@@ -93,9 +99,8 @@ class NotificationController extends Controller
                 $notification_video = $this->saveVideo($request->video,'attachments/notification/video/'.$notification->id);
                 $notification->video = $notification_video;
                 $notification->save();
+                $notification->video=URL::asset('attachments/notification/video/'.$notification->id.'/'.$notification->video);
             }
-            $notification->image=URL::asset('attachments/notification/image/'.$notification->id.'/'.$notification->image);
-            $notification->video=URL::asset('attachments/notification/video/'.$notification->id.'/'.$notification->video);
             return response()->json([
                 "status"=>true,
                 'message' => 'notification Updated successfully',
@@ -114,8 +119,12 @@ class NotificationController extends Controller
             if (!$notification) {
                 return $this->returnError('E004', 'this Id not found');
             }
-            $notification->image=URL::asset('attachments/notification/image/'.$notification->id.'/'.$notification->image);
-            $notification->video=URL::asset('attachments/notification/video/'.$notification->id.'/'.$notification->video);
+            if($notification->image != null){
+                $notification->image=URL::asset('attachments/notification/image/'.$notification->id.'/'.$notification->image);
+            }
+            if($notification->video != null){
+                $notification->video=URL::asset('attachments/notification/video/'.$notification->id.'/'.$notification->video);
+            }
             return response()->json([
                     "status"=>true,
                     'message' => 'Team Show successfully',
