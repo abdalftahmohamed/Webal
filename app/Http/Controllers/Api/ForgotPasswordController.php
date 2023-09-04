@@ -6,15 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Notifications\ResetPasswordNotification;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
-use App\ApiCode;
-use App\Http\Requests\ResetPasswordRequest;
-use Illuminate\Support\Str;
 use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password as RulesPassword;
+use Illuminate\Validation\ValidationException;
 
 class ForgotPasswordController extends Controller
 {
@@ -24,9 +22,9 @@ class ForgotPasswordController extends Controller
         $request->validate([
             'email' => 'required|email',
         ]);
-        $codeInsert=User::where('email',$request->email)->first();
-        if (!$codeInsert){
-            return response()->json(['message' => 'Invalid Invalid email address Please try again'],422);
+        $codeInsert = User::where('email', $request->email)->first();
+        if (!$codeInsert) {
+            return response()->json(['message' => 'Invalid Invalid email address Please try again'], 422);
         }
 
         $codeInsert->generateCode();
@@ -34,11 +32,12 @@ class ForgotPasswordController extends Controller
         #send code to notification by Email
         $codeInsert->notify(new ResetPasswordNotification);
 
+//        Mail::to($codeInsert->email)->send(new HelloMail());
         return response()->json([
             'message' => 'User successfully sent code check it',
-            'code' =>$codeInsert->code,
-            'expire_at' =>$codeInsert->expire_at,
-            ],201);
+//            'code' =>$codeInsert->code,
+//            'expire_at' =>$codeInsert->expire_at,
+        ], 201);
     }
 
 
@@ -56,7 +55,7 @@ class ForgotPasswordController extends Controller
             return response()->json(['message' => 'Invalid verification code. Please try again.']);
         }
 
-        if($currentDate > $user->expire_at){
+        if ($currentDate > $user->expire_at) {
             return response()->json(['message' => 'this code is expire. Please try again.']);
         }
 
@@ -71,61 +70,60 @@ class ForgotPasswordController extends Controller
     }
 
 
-
 //Email Notification
-//    public function forgotEmail(Request $request)
-//    {
-//        $request->validate([
-//            'email' => 'required|email',
-//        ]);
-//
-//        $status = Password::sendResetLink(
-//            $request->only('email')
-//        );
-//
-//        if ($status == Password::RESET_LINK_SENT) {
-//            return [
-//                'status' => __($status)
-//            ];
-//        }
-//
-//        throw ValidationException::withMessages([
-//            'email' => [trans($status)],
-//        ]);
-//    }
-//
-//    public function resetEmail(Request $request)
-//    {
-//        $request->validate([
-//            'token' => 'required',
-//            'email' => 'required|email',
-//            'password' => ['required', 'confirmed', RulesPassword::defaults()],
-//        ]);
-//
-//        $status = Password::reset(
-//            $request->only('email', 'password', 'password_confirmation', 'token'),
-//            function ($user) use ($request) {
-//                $user->forceFill([
-//                    'password' => Hash::make($request->password),
-//                    'remember_token' => Str::random(60),
-//                ])->save();
-//
-//                $user->tokens()->delete();
-//
-//                event(new PasswordReset($user));
-//            }
-//        );
-//
-//        if ($status == Password::PASSWORD_RESET) {
-//            return response([
-//                'message' => 'Password reset successfully'
-//            ]);
-//        }
-//
-//        return response([
-//            'message' => __($status)
-//        ], 500);
-//
-//    }
+    public function forgotEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        if ($status == Password::RESET_LINK_SENT) {
+            return [
+                'status' => __($status)
+            ];
+        }
+
+        throw ValidationException::withMessages([
+            'email' => [trans($status)],
+        ]);
+    }
+
+    public function resetEmail(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => ['required', 'confirmed', RulesPassword::defaults()],
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user) use ($request) {
+                $user->forceFill([
+                    'password' => Hash::make($request->password),
+                    'remember_token' => Str::random(60),
+                ])->save();
+
+                $user->tokens()->delete();
+
+                event(new PasswordReset($user));
+            }
+        );
+
+        if ($status == Password::PASSWORD_RESET) {
+            return response([
+                'message' => 'Password reset successfully'
+            ]);
+        }
+
+        return response([
+            'message' => __($status)
+        ], 500);
+
+    }
 
 }
