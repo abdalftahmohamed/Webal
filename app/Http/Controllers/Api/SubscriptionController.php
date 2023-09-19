@@ -25,7 +25,7 @@ class SubscriptionController extends Controller
     public function savePlan(PlanRequest $request)
     {
         \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
-        $amount = ($request->amount * 100);
+        $amount = ($request->amount);
         try {
             $plan = Plan::create([
                 'amount' => $amount,
@@ -36,17 +36,27 @@ class SubscriptionController extends Controller
                     'name' => $request->name
                 ]
             ]);
-
-         $plan=ModelsPlan::create([
-                'plan_id' => $plan->id,
-                'name' => $request->name,
-                'price' => $plan->amount,
-                'billing_method' => $plan->interval,
-                'currency' => $plan->currency,
-                'interval_count' => $plan->interval_count
-            ]);
-        }
-        catch(Exception $ex){
+            $Plan_Id = ModelsPlan::where('name', $request->name);
+            if (!$Plan_Id->exists()) {
+                $plan = ModelsPlan::create([
+                    'plan_id' => $plan->id,
+                    'name' => $request->name,
+                    'price' => $plan->amount,
+                    'billing_method' => $plan->interval,
+                    'currency' => $plan->currency,
+                    'interval_count' => $plan->interval_count
+                ]);
+            } else {
+                $Plan_Id->first();
+                $Plan_Id->update([
+//                    'plan_id' => $plan->id,
+                    'price' => $plan->amount,
+                    'billing_method' => $plan->interval,
+                    'currency' => $plan->currency,
+                    'interval_count' => $plan->interval_count
+                ]);
+            }
+        } catch (Exception $ex) {
             return response()->json([
                 'status' => false,
                 'message' => 'Exception Error System',
@@ -57,7 +67,7 @@ class SubscriptionController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'plan created successfully',
-            'plan' => $plan
+            'plan' => $Plan_Id->first()
         ], 201);
     }
 
@@ -87,42 +97,50 @@ class SubscriptionController extends Controller
     {
         $plan = ModelsPlan::where('plan_id', $request->plan_id)->first();
 //        return $plan;
-        if(!$plan){
+        if (!$plan) {
             return back()->withErrors([
                 'message' => 'Unable to locate the plan'
             ]);
         }
         $user = User::find(auth('api')->user()->id);
+        $check_subscribe = Subscripe::where('user_id', $user->id);
+        if ($check_subscribe) {
+            $check_subscribe->update([
+                'status'=>'inactive'
+            ]);
+        }
+
 
 //        $intent = $user->createSetupIntent();
 
-        $supscripe=new Subscripe();
-        $supscripe->user_id=$user->id;
-        $supscripe->name=$user->name;
-        $supscripe->plan_id=$request->plan_id;
-        $supscripe->quantity=$request->quantity;
-        $supscripe->payment_type=$request->payment_type;
+        $supscripe = new Subscripe();
+        $supscripe->user_id = $user->id;
+        $supscripe->name = $user->name;
+        $supscripe->plan_id = $request->plan_id;
+        $supscripe->quantity = $request->quantity;
+        $supscripe->payment_type = $request->payment_type;
         $supscripe->start_at = Carbon::now();
-        if($plan->name == 'basic'){
-            $supscripe->ends_at =Carbon::now()->addDays(7) ;
+        if ($plan->name == 'basic') {
+            $supscripe->ends_at = Carbon::now()->addDays(7);
         }
-        if($plan->name == 'professional'){
-            $supscripe->ends_at =Carbon::now()->addDays(30) ;
+        if ($plan->name == 'professional') {
+            $supscripe->ends_at = Carbon::now()->addDays(30);
         }
-        if($plan->name == 'enterprise'){
-            $supscripe->ends_at =Carbon::now()->addDays(365) ;
+        if ($plan->name == 'enterprise') {
+            $supscripe->ends_at = Carbon::now()->addDays(365);
         }
-        $supscripe->status='active';
-         $supscripe ->save();
+        $supscripe->status = 'active';
+        $supscripe->save();
         return response()->json([
             'plan' => $plan->name,
             'subscription' => $supscripe
         ]);
     }
 
-    public function showUser(){
+    public function showUser()
+    {
         $user = User::find(auth('api')->user()->id);
-       $ss= $user->Subscripe()->get();
+        $ss = $user->Subscripe()->get();
         return response()->json([
             'subscriptions' => $ss
         ]);
@@ -139,15 +157,14 @@ class SubscriptionController extends Controller
             $user->createOrGetStripeCustomer();
             $paymentMethod = null;
             $paymentMethod = $request->payment_method;
-            if($paymentMethod != null){
+            if ($paymentMethod != null) {
                 $paymentMethod = $user->addPaymentMethod($paymentMethod);
             }
             $plan = $request->plan_id;
-                $user->newSubscription(
-                    'default', $plan
-                )->create( $paymentMethod != null ? $paymentMethod->id: '');
-        }
-        catch(Exception $ex){
+            $user->newSubscription(
+                'default', $plan
+            )->create($paymentMethod != null ? $paymentMethod->id : '');
+        } catch (Exception $ex) {
             return response()->json([
                 'status' => false,
                 'message' => 'Exception Error System Plan',
@@ -163,26 +180,27 @@ class SubscriptionController extends Controller
 
     public function allSubscriptions()
     {
-   $sub=Subscripe::with('user')->get();
+        $sub = Subscripe::with('user')->get();
         return response()->json([
             'Subscription' => $sub
         ]);
     }
 
+
+
     public function singleCharge(Request $request)
     {
         try {
             $amount = ($request->amount * 100);
-            $paymentMethod=$request->payment_method;
-            $user= auth()->user();
+            $paymentMethod = $request->payment_method;
+            $user = auth()->user();
 
             $user->createOrGetStripeCustomer();
-            $paymentMethod=$user->addPaymentMethod($paymentMethod);
+            $paymentMethod = $user->addPaymentMethod($paymentMethod);
 
-            $user->charge($amount,$paymentMethod->id);
+            $user->charge($amount, $paymentMethod->id);
             return redirect()->back();
-        }
-        catch (Exception $exception){
+        } catch (Exception $exception) {
             return redirect()->back();
         }
     }

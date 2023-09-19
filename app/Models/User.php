@@ -68,6 +68,6 @@ class User extends Authenticatable implements LaratrustUser,JWTSubject
 
     public function Subscripe()
     {
-        return $this->hasOne(Subscripe::class);
+        return $this->hasOne(Subscripe::class)->where('status','active');
     }
 }

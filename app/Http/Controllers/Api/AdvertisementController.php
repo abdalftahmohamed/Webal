@@ -8,14 +8,17 @@ use App\Http\Resources\AdvertisementResource;
 use App\Models\Advertisement;
 use App\Traits\GeneralTrait;
 use App\Traits\ImageTrait;
-use Illuminate\Http\JsonResponse;
-
+use FFMpeg\Coordinate\TimeCode;
+use FFMpeg\FFMpeg;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 class AdvertisementController extends Controller
 {
     use GeneralTrait;
     use ImageTrait;
-    public function index():  JsonResponse
+    public function index()
     {
         try {
             $advertisements = Advertisement::all();
@@ -28,7 +31,8 @@ class AdvertisementController extends Controller
         }
     }
 
-    public function store(AdvertisementRequest $request):  JsonResponse
+
+    public function store(AdvertisementRequest $request)
     {
         try {
             $advertisement = new Advertisement();
@@ -43,22 +47,28 @@ class AdvertisementController extends Controller
                 $advertisement->save();
             }
 
+
+
             if ($request->hasFile('video')) {
 //                $this->deleteFile('advertisements',$id);
                 $advertisement_video = $this->saveImage($request->video,'attachments/advertisements/'.$advertisement->id);
                 $advertisement->video = $advertisement_video;
                 $advertisement->save();
+
             }
+
+
             return response()->json([
                 'message' => 'Advertisement created successfully',
                 'data' => new AdvertisementResource(Advertisement::find($advertisement->id))
-//            $advertisement
             ],201);
         } catch (\Throwable $ex) {
             return $this->returnError($ex->getCode(), $ex->getMessage());
         }
     }
-    public function update(AdvertisementRequest $request, $id):  JsonResponse
+
+
+    public function update(AdvertisementRequest $request, $id)
     {
         try {
             $advertisement =Advertisement::find($id);
@@ -92,7 +102,7 @@ class AdvertisementController extends Controller
 
     }
 
-    public function show( $id):  JsonResponse
+    public function show( $id)
     {
         try {
             $advertisement =Advertisement::find($id);
@@ -110,7 +120,7 @@ class AdvertisementController extends Controller
         }
 
     }
-    public function destroy($id):  JsonResponse
+    public function destroy($id)
     {
         try {
             $advertisement = Advertisement::find($id);

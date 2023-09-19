@@ -163,7 +163,6 @@ Route::group(['middleware' => ['api','isAdmin']], function ($router) {
         Route::post('delete/{id}', [TrainningVideoController::class,'destroy']);
     });
 
-
     Route::group(['middleware' => ['api'], 'prefix' => 'livefacebook'], function ($router) {
         Route::get('show_all', [LiveFaceBookController::class,'index']);
         Route::post('save', [LiveFaceBookController::class,'store']);
@@ -171,7 +170,6 @@ Route::group(['middleware' => ['api','isAdmin']], function ($router) {
         Route::post('update/{id}', [LiveFaceBookController::class,'update']);
         Route::post('delete/{id}', [LiveFaceBookController::class,'destroy']);
     });
-
 
     Route::group(['middleware' => ['api'], 'prefix' => 'livetwitter'], function ($router) {
         Route::get('show_all', [LiveTwitterController::class,'index']);
@@ -197,7 +195,6 @@ Route::group(['middleware' => ['api','isAdmin']], function ($router) {
         Route::post('delete/{id}', [LiveInstagramController::class,'destroy']);
     });
 
-
     Route::group(['middleware' => ['api'], 'prefix' => 'livelinkedin'], function ($router) {
         Route::get('show_all', [LiveLinkedinController::class,'index']);
         Route::post('save', [LiveLinkedinController::class,'store']);
@@ -206,30 +203,6 @@ Route::group(['middleware' => ['api','isAdmin']], function ($router) {
         Route::post('delete/{id}', [LiveLinkedinController::class,'destroy']);
     });
 
-
-// Route::post('register', 'RegistrationController@register');
-// Route::get('email/verify/{id}', 'VerificationController@verify')->name('verification.verify');
-// Route::get('email/resend', App\Http\Controllers\Api\VerificationController,'resend')->name('verification.resend');
-
-
-
-
 });
 
-//
-//Route::get('/plans', function() {
-//    $plans = Http::get('https://jsonplaceholder.typicode.com/posts');
-//
-//    return $plans;
-//
-//
-//
-//    $ch = curl_init();
-//    curl_setopt($ch, CURLOPT_URL, 'https://jsonplaceholder.typicode.com/posts');
-//    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-//    curl_setopt($ch, CURLOPT_POSTFIELDS, array());
-//    $response = curl_exec($ch);
-//    var_export($response);
-//
-//    return $response;
-//});
+
