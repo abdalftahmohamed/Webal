@@ -50,11 +50,9 @@ class AdvertisementController extends Controller
 
 
             if ($request->hasFile('video')) {
-//                $this->deleteFile('advertisements',$id);
                 $advertisement_video = $this->saveImage($request->video,'attachments/advertisements/'.$advertisement->id);
                 $advertisement->video = $advertisement_video;
                 $advertisement->save();
-
             }
 
 

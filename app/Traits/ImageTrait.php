@@ -34,6 +34,8 @@ trait ImageTrait
         }
         return null;
     }
+
+
     public function deleteFile($folder,$id)
     {
         $exists = Storage::disk('upload_attachments')->exists('attachments/'.$folder.'/'.$id);
